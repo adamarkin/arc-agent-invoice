@@ -47,6 +47,13 @@ npm run build                   # static site into docs/
 ## Gas estimate (read-only `eth_estimateGas` against Arc mainnet, 2026-10-05)
 Deploy ≈ 445k gas, create ≈ 115k, pay ≈ 47k at 20 gwei ≈ **0.009 + 0.0023 + 0.0009 USDC**. Conservative projection (3× gas price, 1.5× gas) for deploy + create + pay canary ≈ **0.06 USDC**, far below the 5 USDC budget.
 
+## Reown AppKit / WalletConnect setup (mobile wallets, e.g. Trust Wallet)
+`deploy.html` has a primary Reown path (`@reown/appkit` + `@reown/appkit-adapter-ethers`, built-in Arc mainnet network `eip155:5042`) and an injected-wallet diagnostics fallback. Without a Project ID the Reown buttons show "Reown not configured: Project ID required" and everything else keeps working.
+1. Sign in at https://dashboard.reown.com and create an AppKit project named `arc-agent-invoice` (JavaScript).
+2. Add `https://adamarkin.github.io` to the project's allowed origins (domain allowlist).
+3. Build with the Project ID: `REOWN_PROJECT_ID=<id> npm run build`, commit `docs/`, push.
+The Project ID is public client configuration (it ships in the bundle), not a signing secret. No private key or seed is ever requested; the wallet signs every transaction. App metadata URL: `https://adamarkin.github.io/arc-agent-invoice/`.
+
 ## Deploy (no private keys, ever)
 Wallet-UI flow only:
 1. Serve `docs/` (or open the hosted site) and go to `deploy.html`.

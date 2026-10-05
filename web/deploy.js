@@ -1,4 +1,7 @@
 import { publicClient, $, say, connect, fromNative, ARC } from "./common.js";
+
+// Build-time public client config (not a secret). Empty => Reown disabled.
+const REOWN_PROJECT_ID = typeof __REOWN_PROJECT_ID__ === "string" ? __REOWN_PROJECT_ID__ : "";
 const art = await fetch("./AgentInvoice.json").then((r) => r.json());
 $("sha").textContent = art.bytecodeSha256;
 
@@ -70,3 +73,34 @@ $("deploy").onclick = async () => {
   } catch (e) { say(out, "Deploy failed:\n" + errText(e), "err"); }
   finally { clearTimeout(timer); $("pending").hidden = true; }
 };
+
+// ---- Reown AppKit / WalletConnect (primary mobile path) ----
+const rOut = $("rOut");
+if (!REOWN_PROJECT_ID) {
+  $("rConnect").disabled = true; $("rDeploy").disabled = true;
+  say(rOut, "Reown not configured: Project ID required (build with REOWN_PROJECT_ID). Use the injected-wallet diagnostics below.", "err");
+} else {
+  try {
+    const { initReown } = await import("./reown.js");
+    const r = initReown(REOWN_PROJECT_ID);
+    const refresh = () => {
+      const s = r.state();
+      $("rDeploy").disabled = !(s.connected && s.address);
+      say(rOut, s.connected ? `Connected: ${s.address}\nChain ID: ${s.chainId} (Arc mainnet is 5042; Deploy will request a switch)` : "Not connected.", s.connected ? "ok" : "");
+    };
+    $("rConnect").onclick = () => r.open();
+    r.subscribe(refresh); refresh();
+    $("rDeploy").onclick = async () => {
+      $("rDeploy").disabled = true;
+      say(rOut, "Confirm contract creation in your wallet (no constructor args)…");
+      const t = setTimeout(() => { $("pending").hidden = false; }, 15000);
+      try {
+        const hash = await r.deploy({ bytecode: art.bytecode });
+        say(rOut, "Submitted " + hash + " — waiting…");
+        const rc = await publicClient.waitForTransactionReceipt({ hash });
+        say(rOut, `Deployed at ${rc.contractAddress}  ${ARC.blockExplorers.default.url}/address/${rc.contractAddress}`, "ok");
+      } catch (e) { say(rOut, "Deploy failed:\n" + errText(e), "err"); refresh(); }
+      finally { clearTimeout(t); $("pending").hidden = true; }
+    };
+  } catch (e) { say(rOut, "Reown failed to initialise:\n" + errText(e), "err"); }
+}

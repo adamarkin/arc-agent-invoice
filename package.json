@@ -17,5 +17,11 @@
     "esbuild": "^0.28.2",
     "hardhat": "^2.29.1",
     "viem": "^2.57.3"
+  },
+  "dependencies": {
+    "@ethersproject/sha2": "^5.8.0",
+    "@reown/appkit": "^1.8.24",
+    "@reown/appkit-adapter-ethers": "^1.8.24",
+    "ethers": "^6.17.0"
   }
 }

@@ -1,10 +1,14 @@
 <!doctype html>
 <html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Deploy AgentInvoice</title>
-<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' https://rpc.mainnet.arc.io; base-uri 'none'">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src https://fonts.reown.com; img-src 'self' data: blob: https://*.walletconnect.com https://*.walletconnect.org https://*.reown.com; connect-src 'self' https://rpc.mainnet.arc.io https://rpc.blockdaemon.mainnet.arc.io https://rpc.drpc.mainnet.arc.io https://rpc.quicknode.mainnet.arc.io https://*.walletconnect.org https://*.walletconnect.com wss://*.walletconnect.org wss://*.walletconnect.com https://*.reown.com https://api.web3modal.org; frame-src https://verify.walletconnect.org https://verify.walletconnect.com https://secure.walletconnect.org https://secure.walletconnect.com; base-uri 'none'">
 <link rel="stylesheet" href="style.css"></head><body>
 <h1>Deploy AgentInvoice to Arc mainnet</h1>
 <div class="note">Uses your injected wallet only; no keys are entered here. Bytecode sha256: <code id="sha"></code> — compare with <code>artifacts-out/AgentInvoice.json</code> in the repo before confirming.</div>
+<h2>A. Reown / WalletConnect (recommended on mobile, e.g. Trust Wallet)</h2>
+<p><button id="rConnect">Connect wallet (Reown)</button> <button id="rDeploy" disabled>Deploy via Reown</button></p>
+<div id="rOut" class="out"></div>
+<h2>B. Injected-wallet diagnostics (fallback)</h2>
 <p><b>Step 1</b> — no signature, no transaction:<br><button id="check">Check wallet</button></p>
 <p><b>Step 2</b> — requires your wallet signature (enabled only after Step 1 passes):<br><button id="deploy" disabled>Deploy</button></p>
 <div id="pending" class="note" hidden>If no wallet confirmation appears, the injected provider is not surfacing the eth_sendTransaction contract-creation request; do not retry repeatedly.</div>
