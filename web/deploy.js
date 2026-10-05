@@ -18,7 +18,9 @@ function errText(e) {
     if (cur.details) bits.push("details=" + cur.details);
     if (cur.data !== undefined) { try { bits.push("data=" + JSON.stringify(cur.data)); } catch {} }
     lines.push((depth ? "cause[" + depth + "]: " : "") + (bits.join(" | ") || String(cur)));
-    cur = cur.cause; depth++;
+    if (cur.reason) lines.push("  reason=" + cur.reason);
+    if (cur.info) { try { lines.push("  info=" + JSON.stringify(cur.info)); } catch {} }
+    cur = cur.cause || cur.error; depth++; // viem nests under .cause, ethers under .error
   }
   return lines.join("\n");
 }
@@ -95,7 +97,15 @@ if (!REOWN_PROJECT_ID) {
       say(rOut, "Confirm contract creation in your wallet (no constructor args)…");
       const t = setTimeout(() => { $("pending").hidden = false; }, 15000);
       try {
-        const hash = await r.deploy({ bytecode: art.bytecode });
+        const log = (l) => { $("trace").textContent += new Date().toISOString().slice(11, 19) + " " + l + "\n"; };
+        $("trace").textContent = "";
+        const st = r.state();
+        const [bal, est] = await Promise.all([
+          publicClient.getBalance({ address: st.address }),
+          publicClient.estimateGas({ account: st.address, data: art.bytecode }),
+        ]);
+        log(`preflight: account=${st.address} chain=${st.chainId} balance=${fromNative(bal)} USDC estimateGas=${est}`);
+        const hash = await r.deploy({ bytecode: art.bytecode, gas: est * 13n / 10n, log });
         say(rOut, "Submitted " + hash + " — waiting…");
         const rc = await publicClient.waitForTransactionReceipt({ hash });
         say(rOut, `Deployed at ${rc.contractAddress}  ${ARC.blockExplorers.default.url}/address/${rc.contractAddress}`, "ok");
