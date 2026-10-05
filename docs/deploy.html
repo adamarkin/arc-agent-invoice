@@ -4,6 +4,9 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' https://rpc.mainnet.arc.io; base-uri 'none'">
 <link rel="stylesheet" href="style.css"></head><body>
 <h1>Deploy AgentInvoice to Arc mainnet</h1>
-<div class="note">Uses your injected wallet only; no keys are entered here. Estimated cost ≈ 0.009 USDC gas (445k gas). Bytecode sha256: <code id="sha"></code> — compare with <code>artifacts-out/AgentInvoice.json</code> in the repo before confirming.</div>
-<p><button id="deploy">Connect wallet (chain 5042) &amp; deploy</button></p><div id="out" class="out"></div>
+<div class="note">Uses your injected wallet only; no keys are entered here. Bytecode sha256: <code id="sha"></code> — compare with <code>artifacts-out/AgentInvoice.json</code> in the repo before confirming.</div>
+<p><b>Step 1</b> — no signature, no transaction:<br><button id="check">Check wallet</button></p>
+<p><b>Step 2</b> — requires your wallet signature (enabled only after Step 1 passes):<br><button id="deploy" disabled>Deploy</button></p>
+<div id="pending" class="note" hidden>If no wallet confirmation appears, the injected provider is not surfacing the eth_sendTransaction contract-creation request; do not retry repeatedly.</div>
+<div id="out" class="out"></div>
 <p><a href="index.html">Back</a></p><script type="module" src="deploy.js"></script></body></html>

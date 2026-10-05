@@ -1,14 +1,72 @@
-import { publicClient, $, say, connect, ARC } from "./common.js";
+import { publicClient, $, say, connect, fromNative, ARC } from "./common.js";
 const art = await fetch("./AgentInvoice.json").then((r) => r.json());
 $("sha").textContent = art.bytecodeSha256;
+
+// Full error detail: code, message, shortMessage, details, nested cause chain.
+function errText(e) {
+  const lines = [];
+  let cur = e, depth = 0;
+  while (cur && depth < 6) {
+    const bits = [];
+    if (cur.name) bits.push("name=" + cur.name);
+    if (cur.code !== undefined) bits.push("code=" + cur.code);
+    if (cur.shortMessage) bits.push("shortMessage=" + cur.shortMessage);
+    if (cur.message && cur.message !== cur.shortMessage) bits.push("message=" + cur.message);
+    if (cur.details) bits.push("details=" + cur.details);
+    if (cur.data !== undefined) { try { bits.push("data=" + JSON.stringify(cur.data)); } catch {} }
+    lines.push((depth ? "cause[" + depth + "]: " : "") + (bits.join(" | ") || String(cur)));
+    cur = cur.cause; depth++;
+  }
+  return lines.join("\n");
+}
+
+let session = null;
+const setDeploy = (on) => { $("deploy").disabled = !on; };
+setDeploy(false);
+
+$("check").onclick = async () => {
+  const out = $("out");
+  setDeploy(false); session = null;
+  try {
+    say(out, "Connecting wallet (no signature, no transaction)…");
+    const { wallet, account } = await connect();
+    const chainId = await wallet.getChainId();
+    const [balance, gasPrice, gas] = await Promise.all([
+      publicClient.getBalance({ address: account }),
+      publicClient.getGasPrice(),
+      publicClient.estimateGas({ account, data: art.bytecode }),
+    ]);
+    const cost = gas * gasPrice;
+    const need = cost * 3n;
+    const ok = chainId === ARC.id && balance >= need;
+    say(out, [
+      "Account:    " + account,
+      "Chain ID:   " + chainId + (chainId === ARC.id ? " (Arc mainnet)" : " (WRONG)"),
+      "Balance:    " + fromNative(balance) + " USDC (from " + ARC.rpcUrls.default.http[0] + ")",
+      "Gas price:  " + gasPrice + " wei (" + (Number(gasPrice) / 1e9) + " gwei)",
+      "Deploy gas: " + gas + " (eth_estimateGas, exact artifact bytecode, sha256 " + art.bytecodeSha256.slice(0, 12) + "…)",
+      "Est. cost:  " + fromNative(cost) + " USDC",
+      "Needed (3x headroom): " + fromNative(need) + " USDC",
+      ok ? "RESULT: PASS — Deploy enabled." : "RESULT: FAIL — insufficient balance or wrong chain.",
+    ].join("\n"), ok ? "ok" : "err");
+    if (ok) { session = { wallet, account }; setDeploy(true); }
+  } catch (e) { say(out, "Check failed:\n" + errText(e), "err"); }
+};
+
 $("deploy").onclick = async () => {
   const out = $("out");
+  if (!session) return;
+  setDeploy(false); // avoid repeated requests
+  const { wallet, account } = session;
+  say(out, "Confirm deployment in your wallet (no constructor args)…");
+  const timer = setTimeout(() => {
+    $("pending").hidden = false;
+  }, 15000);
   try {
-    const { wallet, account } = await connect();
-    say(out, "Confirm deployment in your wallet (no constructor args)…");
     const hash = await wallet.deployContract({ abi: art.abi, bytecode: art.bytecode, account });
     say(out, "Submitted " + hash + " — waiting…");
     const rc = await publicClient.waitForTransactionReceipt({ hash });
     say(out, `Deployed at ${rc.contractAddress}  ${ARC.blockExplorers.default.url}/address/${rc.contractAddress}`, "ok");
-  } catch (e) { say(out, e.shortMessage || e.message, "err"); }
+  } catch (e) { say(out, "Deploy failed:\n" + errText(e), "err"); }
+  finally { clearTimeout(timer); $("pending").hidden = true; }
 };
