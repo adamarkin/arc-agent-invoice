@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Arc Agent Invoice</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' https://rpc.mainnet.arc.io; img-src 'self'; base-uri 'none'; form-action 'none'">
+<link rel="stylesheet" href="style.css"></head><body>
+<h1>Arc Agent Invoice</h1>
+<p>Non-custodial invoices and onchain receipts for AI agents and freelancers, paid in Arc's <b>native USDC</b>. Network: Arc mainnet (chain ID 5042).</p>
+<div class="note"><b>Units &amp; safety.</b> On Arc, USDC is the native gas token. Amounts here are native value (18-decimal units; 1 USDC = 10<sup>18</sup> wei-style units), <i>not</i> the 6-decimal ERC-20 view at 0x3600…0000. Type amounts as normal USDC decimals (e.g. 1.5). The contract forwards payment to the payee in the same transaction and holds no funds. This site never asks for private keys or seed phrases — only your wallet signs, and you review each transaction. Always verify the contract address on <a href="https://explorer.arc.io" rel="noopener">explorer.arc.io</a>. Unaudited; use small amounts.</div>
+<fieldset><legend>Contract</legend><input id="contract" placeholder="AgentInvoice address 0x…" autocomplete="off"></fieldset>
+<fieldset><legend>Look up invoice (read-only, no wallet)</legend>
+<input id="lookupId" placeholder="invoice id (any text, hashed with keccak256)"><button id="lookup">Look up</button><div id="lookupOut" class="out"></div></fieldset>
+<fieldset><legend>Create invoice (payee wallet)</legend>
+<input id="createId" placeholder="invoice id"><input id="createAmt" placeholder="amount in USDC, e.g. 1.5"><input id="createMeta" placeholder="metadata text (optional, only its hash is stored)">
+<button id="create">Connect wallet &amp; create</button><div id="createOut" class="out"></div></fieldset>
+<fieldset><legend>Pay invoice (payer wallet)</legend>
+<input id="payId" placeholder="invoice id"><button id="pay">Connect wallet &amp; pay exact amount</button><div id="payOut" class="out"></div></fieldset>
+<fieldset><legend>Cancel invoice (payee wallet, unpaid only)</legend>
+<input id="cancelId" placeholder="invoice id"><button id="cancel">Connect wallet &amp; cancel</button><div id="cancelOut" class="out"></div></fieldset>
+<p><a href="deploy.html">Deploy helper</a> · <a href="https://github.com/adamarkin/arc-agent-invoice" rel="noopener">Source</a></p>
+<script type="module" src="app.js"></script></body></html>

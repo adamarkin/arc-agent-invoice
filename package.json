@@ -1,0 +1,21 @@
+{
+  "name": "arc-agent-invoice",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Non-custodial native-USDC invoice/receipt dApp for Arc mainnet",
+  "license": "MIT",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "artifact": "node scripts/make-artifact.mjs",
+    "estimate": "node scripts/estimate-gas.mjs",
+    "build": "node scripts/build-web.mjs",
+    "check": "npm run compile && npm test && npm run artifact && npm run build"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "esbuild": "^0.28.2",
+    "hardhat": "^2.29.1",
+    "viem": "^2.57.3"
+  }
+}

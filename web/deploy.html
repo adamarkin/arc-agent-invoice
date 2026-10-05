@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Deploy AgentInvoice</title>
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; connect-src 'self' https://rpc.mainnet.arc.io; base-uri 'none'">
+<link rel="stylesheet" href="style.css"></head><body>
+<h1>Deploy AgentInvoice to Arc mainnet</h1>
+<div class="note">Uses your injected wallet only; no keys are entered here. Estimated cost ≈ 0.009 USDC gas (445k gas). Bytecode sha256: <code id="sha"></code> — compare with <code>artifacts-out/AgentInvoice.json</code> in the repo before confirming.</div>
+<p><button id="deploy">Connect wallet (chain 5042) &amp; deploy</button></p><div id="out" class="out"></div>
+<p><a href="index.html">Back</a></p><script type="module" src="deploy.js"></script></body></html>
