@@ -18,6 +18,13 @@ for (const l of mine) {
   const t = await c.getTransaction({ hash: l.transactionHash }); const r = await c.getTransactionReceipt({ hash: l.transactionHash });
   out.events.push({ event: l.eventName, args: JSON.parse(JSON.stringify(l.args, (k, v) => typeof v === "bigint" ? String(v) : v)), tx: l.transactionHash, block: String(l.blockNumber), from: t.from, to: t.to, nonce: t.nonce, value: String(t.value), status: r.status, gasUsed: String(r.gasUsed), feeUSDC: formatEther(r.gasUsed * r.effectiveGasPrice), logCountInReceipt: r.logs.length });
 }
+// Self-pay accounting: balance delta across the pay block should equal -fee (principal returns to the payer/payee).
+for (const e of out.events.filter((x) => x.event === "InvoicePaid")) {
+  const b = BigInt(e.block), who = e.from;
+  const pre = await c.getBalance({ address: who, blockNumber: b - 1n }), post = await c.getBalance({ address: who, blockNumber: b });
+  const blk = await c.getBlock({ blockNumber: b });
+  e.accounting = { preBalance: formatEther(pre), postBalance: formatEther(post), deltaUSDC: formatEther(post - pre), feeUSDC: e.feeUSDC, deltaEqualsMinusFee: (pre - post) === parseEther(e.feeUSDC), blockTimestamp: String(blk.timestamp), contractBalanceAtBlock: String(await c.getBalance({ address: CONTRACT, blockNumber: b })) };
+}
 const inv = await c.readContract({ address: CONTRACT, abi, functionName: "getInvoice", args: [id] });
 out.invoice = { id, payee: inv.payee, amount: String(inv.amount), amountUSDC: formatEther(inv.amount), metadataHash: inv.metadataHash, status: Number(inv.status), payer: inv.payer, paidAt: String(inv.paidAt) };
 console.log(JSON.stringify(out, null, 2));

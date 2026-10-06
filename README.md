@@ -68,7 +68,7 @@ Do not pass raw private keys to any CLI. Hardware/browser wallets or an encrypte
 ## Arc Microgrants criteria mapping
 | Requirement | Where |
 |---|---|
-| Deployed + working on Arc mainnet | deployed and bytecode-verified (see above); canary: `createInvoice("arc-canary-1", 0.001 USDC)` confirmed on mainnet ([tx](https://explorer.arc.io/tx/0x53baa04f81e21d5197c6beabcddc6b5808f0cf908a49c7f02cafe58b659fe46d)); `payInvoice` pending |
+| Deployed + working on Arc mainnet | deployed and bytecode-verified (see above); E2E canary done on mainnet: `createInvoice("arc-canary-1", 0.001 USDC)` ([tx](https://explorer.arc.io/tx/0x53baa04f81e21d5197c6beabcddc6b5808f0cf908a49c7f02cafe58b659fe46d)) then `payInvoice` ([tx](https://explorer.arc.io/tx/0xc3f8f63fe9b53f6ca454529c24bd229aecbec78f4c4c0c75348a6e1707b5193d)), invoice status Paid, contract balance 0, `InvoicePaid` receipt emitted. Self-pay (payer = payee); total spend ≈ 0.012 USDC. Reproduce: `node scripts/verify-canary.mjs` |
 | Public repo | this repo |
 | Short description | first paragraph |
 | Public builder profile | GitHub: adamarkin |

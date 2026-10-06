@@ -33,6 +33,23 @@
       "event": "InvoiceCreated(payee=0x7C48…9973, amount=1e15 (0.001 USDC), metadataHash=0x0)",
       "verifiedBy": "scripts/verify-canary.mjs"
     },
-    "pay": null
+    "pay": {
+      "tx": "0xc3f8f63fe9b53f6ca454529c24bd229aecbec78f4c4c0c75348a6e1707b5193d",
+      "block": 24497884,
+      "senderNonce": 2,
+      "status": "success",
+      "valueWei": "1000000000000000",
+      "gasUsed": 43892,
+      "effectiveGasPriceWei": "21000000000",
+      "feeUSDC": "0.000921732",
+      "event": "InvoicePaid(payee=payer=0x7C48…9973, amount=1e15, paidAt=1791258128)",
+      "receiptLogs": "3 = 2 Arc native-transfer Transfer logs (system address 0xff…fe: payer→contract, contract→payee, 1e15 each) + InvoicePaid",
+      "finalInvoiceStatus": "Paid",
+      "selfPayBalanceDeltaEqualsMinusFee": true,
+      "contractBalanceAfter": "0",
+      "verifiedBy": "scripts/verify-canary.mjs"
+    },
+    "totalSpendUSDC": "0.012134178",
+    "note": "Self-pay (payer == payee) canary; a distinct-payer run was not performed."
   }
 }
