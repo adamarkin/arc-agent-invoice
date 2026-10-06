@@ -4,14 +4,15 @@
 <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self' 'unsafe-inline'; font-src https://fonts.reown.com; img-src 'self' data: blob: https://*.walletconnect.com https://*.walletconnect.org https://*.reown.com; connect-src 'self' https://rpc.mainnet.arc.io https://rpc.blockdaemon.mainnet.arc.io https://rpc.drpc.mainnet.arc.io https://rpc.quicknode.mainnet.arc.io https://*.walletconnect.org https://*.walletconnect.com wss://*.walletconnect.org wss://*.walletconnect.com https://*.reown.com https://api.web3modal.org; frame-src https://verify.walletconnect.org https://verify.walletconnect.com https://secure.walletconnect.org https://secure.walletconnect.com; base-uri 'none'">
 <link rel="stylesheet" href="style.css"></head><body>
 <h1>Deploy AgentInvoice to Arc mainnet</h1>
-<div class="note">Uses your injected wallet only; no keys are entered here. Bytecode sha256: <code id="sha"></code> — compare with <code>artifacts-out/AgentInvoice.json</code> in the repo before confirming.</div>
-<h2>A. Reown / WalletConnect (recommended on mobile, e.g. Trust Wallet)</h2>
+<div class="note">No keys or seed phrases are ever entered here; your wallet signs. Bytecode sha256: <code id="sha"></code> — compare with <code>artifacts-out/AgentInvoice.json</code> in the repo before confirming.</div>
+<h2>A. Desktop browser wallet extension (recommended)</h2>
+<p>Wallet: <select id="walletSel"></select></p>
+<p><b>Step 1</b> — no signature, no transaction:<br><button id="check">Check wallet</button></p>
+<p><b>Step 2</b> — requires your wallet signature (enabled only after Step 1 passes; one shot):<br><button id="deploy" disabled>Deploy</button></p>
+<div id="pending" class="note" hidden>If no wallet confirmation appears, the wallet is not surfacing the eth_sendTransaction contract-creation request; do not retry repeatedly. Check the wallet's extension popup/notification.</div>
+<div id="out" class="out"></div>
+<div class="note">Request trace (copy this if Deploy fails):</div><div id="trace" class="out"></div>
+<h2>B. Reown / WalletConnect (mobile; Trust Wallet requests have hung here)</h2>
 <p><button id="rConnect">Connect wallet (Reown)</button> <button id="rDeploy" disabled>Deploy via Reown</button></p>
 <div id="rOut" class="out"></div>
-<div class="note">Request trace (copy this if Deploy fails):</div><div id="trace" class="out"></div>
-<h2>B. Injected-wallet diagnostics (fallback)</h2>
-<p><b>Step 1</b> — no signature, no transaction:<br><button id="check">Check wallet</button></p>
-<p><b>Step 2</b> — requires your wallet signature (enabled only after Step 1 passes):<br><button id="deploy" disabled>Deploy</button></p>
-<div id="pending" class="note" hidden>If no wallet confirmation appears, the injected provider is not surfacing the eth_sendTransaction contract-creation request; do not retry repeatedly.</div>
-<div id="out" class="out"></div>
 <p><a href="index.html">Back</a></p><script type="module" src="deploy.js"></script></body></html>
