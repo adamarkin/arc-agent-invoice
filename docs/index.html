@@ -6,7 +6,9 @@
 <h1>Arc Agent Invoice</h1>
 <p>Non-custodial invoices and onchain receipts for AI agents and freelancers, paid in Arc's <b>native USDC</b>. Network: Arc mainnet (chain ID 5042).</p>
 <div class="note"><b>Units &amp; safety.</b> On Arc, USDC is the native gas token. Amounts here are native value (18-decimal units; 1 USDC = 10<sup>18</sup> wei-style units), <i>not</i> the 6-decimal ERC-20 view at 0x3600…0000. Type amounts as normal USDC decimals (e.g. 1.5). The contract forwards payment to the payee in the same transaction and holds no funds. This site never asks for private keys or seed phrases — only your wallet signs, and you review each transaction. Always verify the contract address on <a href="https://explorer.arc.io" rel="noopener">explorer.arc.io</a>. Unaudited; use small amounts.</div>
-<fieldset><legend>Contract</legend><input id="contract" placeholder="AgentInvoice address 0x…" autocomplete="off"></fieldset>
+<fieldset><legend>Contract</legend><input id="contract" placeholder="AgentInvoice address 0x…" autocomplete="off">
+<p>Wallet for create/pay/cancel (browser extension): <select id="walletSel"></select></p>
+<p class="note">Verified deployment on Arc mainnet: <a href="https://explorer.arc.io/address/0x3F5eB3c16E4581E86703aAd94cc5385649b45327" rel="noopener">0x3F5eB3c16E4581E86703aAd94cc5385649b45327</a> (deploy tx <a href="https://explorer.arc.io/tx/0x343befc10220c508a3f2cc6110c73a69cbda55cbb4db6a575ad29e118a4f2fce" rel="noopener">0x343befc1…2fce</a>). Sends are refused if the address does not hold this contract's exact runtime code.</p></fieldset>
 <fieldset><legend>Look up invoice (read-only, no wallet)</legend>
 <input id="lookupId" placeholder="invoice id (any text, hashed with keccak256)"><button id="lookup">Look up</button><div id="lookupOut" class="out"></div></fieldset>
 <fieldset><legend>Create invoice (payee wallet)</legend>

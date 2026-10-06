@@ -1,0 +1,23 @@
+{
+  "network": "Arc mainnet",
+  "chainId": 5042,
+  "contract": "0x3F5eB3c16E4581E86703aAd94cc5385649b45327",
+  "deployer": "0x7C483A857D3e9e5db64E7914F9E8D4241E389973",
+  "deployTx": "0x343befc10220c508a3f2cc6110c73a69cbda55cbb4db6a575ad29e118a4f2fce",
+  "block": 24494334,
+  "explorer": "https://explorer.arc.io/address/0x3F5eB3c16E4581E86703aAd94cc5385649b45327",
+  "verified": {
+    "date": "2026-10-06",
+    "method": "scripts/verify-deployment.mjs (read-only, public RPC)",
+    "receiptStatus": "success",
+    "gasUsed": 440293,
+    "effectiveGasPriceWei": "21000000000",
+    "feeUSDC": "0.009246153",
+    "txInputEqualsArtifactBytecode": true,
+    "creationBytecodeSha256Hex": "eb084dc3249fde63de1f41948f5ea6ea63dea155c8640805988cfa619126caff",
+    "onchainRuntimeKeccak": "0x3676240a6c7c2cf6d7cc56f804e909add5687a31186060e7a5a18c18026013c9",
+    "equalsCompiledRuntime": true,
+    "runtimeBytes": 1790,
+    "contractAddressMatchesDeployerNonce0": true
+  }
+}

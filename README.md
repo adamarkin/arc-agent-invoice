@@ -4,8 +4,9 @@ Tiny, non-custodial invoice + payment-receipt dApp for AI agents and freelancers
 
 A payee creates an invoice denominated in Arc's **native USDC**. A payer pays the exact amount as `msg.value`; the contract forwards it to the payee in the same transaction and emits a verifiable onchain receipt (`InvoicePaid`). The contract never retains funds.
 
-- Live app: _pending deployment_ (GitHub Pages, served from `docs/`)
-- Contract address: _pending mainnet deployment_ (will be recorded in `docs/config.json` and below)
+- Live app: https://adamarkin.github.io/arc-agent-invoice/ (GitHub Pages, served from `docs/`)
+- **Arc mainnet contract (verified): [`0x3F5eB3c16E4581E86703aAd94cc5385649b45327`](https://explorer.arc.io/address/0x3F5eB3c16E4581E86703aAd94cc5385649b45327)**, deploy tx [`0x343befc1…2fce`](https://explorer.arc.io/tx/0x343befc10220c508a3f2cc6110c73a69cbda55cbb4db6a575ad29e118a4f2fce), block 24494334, deployer `0x7C483A857D3e9e5db64E7914F9E8D4241E389973`.
+  Verified independently from the public RPC with `node scripts/verify-deployment.mjs <tx> <contract> <deployer>`: receipt `success`, tx input equals the artifact creation bytecode (sha256 of hex string `eb084dc3…caff`), on-chain runtime code equals the locally compiled runtime (keccak `0x3676240a…13c9`, 1790 bytes), address equals `CREATE(deployer, nonce 0)`, fee ≈ 0.00925 USDC. Details: `deployments/arc-mainnet.json`.
 
 ## Arc config
 | | |
@@ -67,7 +68,7 @@ Do not pass raw private keys to any CLI. Hardware/browser wallets or an encrypte
 ## Arc Microgrants criteria mapping
 | Requirement | Where |
 |---|---|
-| Deployed + working on Arc mainnet | pending deployment (see above) |
+| Deployed + working on Arc mainnet | deployed and bytecode-verified (see above); end-to-end canary (create + pay) pending |
 | Public repo | this repo |
 | Short description | first paragraph |
 | Public builder profile | GitHub: adamarkin |

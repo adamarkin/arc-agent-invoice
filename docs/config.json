@@ -1,3 +1,5 @@
 {
-  "contract": ""
+  "contract": "0x3F5eB3c16E4581E86703aAd94cc5385649b45327",
+  "runtimeKeccak": "0x3676240a6c7c2cf6d7cc56f804e909add5687a31186060e7a5a18c18026013c9",
+  "deployTx": "0x343befc10220c508a3f2cc6110c73a69cbda55cbb4db6a575ad29e118a4f2fce"
 }

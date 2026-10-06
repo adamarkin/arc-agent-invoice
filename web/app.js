@@ -1,4 +1,5 @@
-import { publicClient, idOf, toNative, fromNative, isAddress, $, say, connect, ARC } from "./common.js";
+import { encodeFunctionData, keccak256 } from "viem";
+import { publicClient, idOf, toNative, fromNative, isAddress, $, say, connect, listWallets, ARC } from "./common.js";
 
 const ABI = await fetch("./abi.json").then((r) => r.json());
 const cfg = await fetch("./config.json").then((r) => r.json());
@@ -33,25 +34,49 @@ $("lookup").onclick = guard($("lookupOut"), async () => {
   if (inv.status === 0) say($("lookupOut"), "No invoice with that id.", "err"); else show(inv);
 });
 
-async function send(out, fn) {
-  const { wallet, account } = await connect();
-  say(out, "Confirm in your wallet…");
-  const hash = await fn(wallet, account);
-  say(out, "Submitted " + hash + " — waiting…");
-  const rc = await publicClient.waitForTransactionReceipt({ hash });
-  say(out, `${rc.status === "success" ? "Confirmed" : "FAILED"}: ${ex}/tx/${hash}`, rc.status === "success" ? "ok" : "err");
+// Wallet picker (EIP-6963); several extensions make window.ethereum ambiguous.
+const sel = $("walletSel");
+const fillWallets = () => {
+  const ws = listWallets(), cur = sel.value;
+  sel.textContent = "";
+  const first = document.createElement("option");
+  first.value = ""; first.textContent = ws.length > 1 ? "— choose wallet —" : "(auto)";
+  sel.append(first);
+  for (const w of ws) { const o = document.createElement("option"); o.value = w.uuid; o.textContent = w.name; sel.append(o); }
+  if (ws.length === 1) sel.value = ws[0].uuid; else if (cur) sel.value = cur;
+};
+window.addEventListener("wallets-changed", fillWallets); fillWallets();
+
+// One transaction through the selected wallet: checks the contract's code, simulates (so reverts show
+// BEFORE the wallet prompt), sends with explicit gas, waits for the receipt. Button is locked while in flight.
+async function send(btn, out, build) {
+  btn.disabled = true;
+  try {
+    const to = getAddr();
+    const code = await publicClient.getCode({ address: to });
+    if (!code || keccak256(code) !== cfg.runtimeKeccak) throw new Error("Address does not hold the expected AgentInvoice runtime code (keccak mismatch). Refusing to send.");
+    const { account, eth } = await connect(sel.value);
+    const { data, value = 0n } = await build(account);
+    const gas = await publicClient.estimateGas({ account, to, data, value }); // throws with revert reason if it would fail
+    say(out, `Confirm in your wallet: ${account} → ${to}  value ${fromNative(value)} USDC, gas ≤ ${gas * 13n / 10n}…`);
+    const hash = await eth.request({ method: "eth_sendTransaction", params: [{
+      from: account, to, data, value: "0x" + value.toString(16), gas: "0x" + (gas * 13n / 10n).toString(16) }] });
+    say(out, "Submitted " + hash + " — waiting…");
+    const rc = await publicClient.waitForTransactionReceipt({ hash });
+    say(out, `${rc.status === "success" ? "Confirmed" : "FAILED"}: ${ex}/tx/${hash}`, rc.status === "success" ? "ok" : "err");
+  } finally { btn.disabled = false; }
 }
-$("create").onclick = guard($("createOut"), () => send($("createOut"), (w, a) => {
+const enc = (functionName, args) => encodeFunctionData({ abi: ABI, functionName, args });
+$("create").onclick = guard($("createOut"), () => send($("create"), $("createOut"), async () => {
   const amt = toNative($("createAmt").value);
   if (amt <= 0n) throw new Error("Amount must be > 0");
   const meta = $("createMeta").value ? idOf($("createMeta").value) : "0x" + "00".repeat(32);
-  return w.writeContract({ address: getAddr(), abi: ABI, functionName: "createInvoice", args: [idOf($("createId").value), amt, meta], account: a });
+  return { data: enc("createInvoice", [idOf($("createId").value), amt, meta]) };
 }));
 $("pay").onclick = guard($("payOut"), async () => {
   const inv = await read($("payId").value);
   if (inv.status !== 1) throw new Error("Invoice is not payable: " + STATUS[inv.status]);
   if (!confirm(`Pay exactly ${fromNative(inv.amount)} native USDC to ${inv.payee}?`)) return;
-  await send($("payOut"), (w, a) => w.writeContract({ address: getAddr(), abi: ABI, functionName: "payInvoice", args: [idOf($("payId").value)], value: inv.amount, account: a }));
+  await send($("pay"), $("payOut"), async () => ({ data: enc("payInvoice", [idOf($("payId").value)]), value: inv.amount }));
 });
-$("cancel").onclick = guard($("cancelOut"), () => send($("cancelOut"), (w, a) =>
-  w.writeContract({ address: getAddr(), abi: ABI, functionName: "cancelInvoice", args: [idOf($("cancelId").value)], account: a })));
+$("cancel").onclick = guard($("cancelOut"), () => send($("cancel"), $("cancelOut"), async () => ({ data: enc("cancelInvoice", [idOf($("cancelId").value)]) })));
