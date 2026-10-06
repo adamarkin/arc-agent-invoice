@@ -68,7 +68,7 @@ Do not pass raw private keys to any CLI. Hardware/browser wallets or an encrypte
 ## Arc Microgrants criteria mapping
 | Requirement | Where |
 |---|---|
-| Deployed + working on Arc mainnet | deployed and bytecode-verified (see above); end-to-end canary (create + pay) pending |
+| Deployed + working on Arc mainnet | deployed and bytecode-verified (see above); canary: `createInvoice("arc-canary-1", 0.001 USDC)` confirmed on mainnet ([tx](https://explorer.arc.io/tx/0x53baa04f81e21d5197c6beabcddc6b5808f0cf908a49c7f02cafe58b659fe46d)); `payInvoice` pending |
 | Public repo | this repo |
 | Short description | first paragraph |
 | Public builder profile | GitHub: adamarkin |

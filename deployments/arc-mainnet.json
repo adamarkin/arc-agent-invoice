@@ -19,5 +19,20 @@
     "equalsCompiledRuntime": true,
     "runtimeBytes": 1790,
     "contractAddressMatchesDeployerNonce0": true
+  },
+  "canary": {
+    "invoiceIdText": "arc-canary-1",
+    "invoiceId": "0xb178a2db3ba2770ba72b593ceca4c92c79f3d1cdedb1abc3ab7875a2061833c6",
+    "create": {
+      "tx": "0x53baa04f81e21d5197c6beabcddc6b5808f0cf908a49c7f02cafe58b659fe46d",
+      "block": 24495134,
+      "senderNonce": 1,
+      "status": "success",
+      "gasUsed": 93633,
+      "feeUSDC": "0.001966293",
+      "event": "InvoiceCreated(payee=0x7C48…9973, amount=1e15 (0.001 USDC), metadataHash=0x0)",
+      "verifiedBy": "scripts/verify-canary.mjs"
+    },
+    "pay": null
   }
 }
